@@ -1,8 +1,22 @@
-package com.mycompany.csa.coursework;
+package com.mycompany.csacoursework;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+import java.net.URI;
 
 public class CSACoursework {
-    public static void main(String[] args) {
-        System.out.println("Hello, MLOps API!");
+
+    public static final String BASE_URI = "http://localhost:8080/api/v1/";
+
+    public static void main(String[] args) throws Exception {
+        ResourceConfig config = new ResourceConfig().packages("com.mycompany.csacoursework");
+        HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), config);
+        
+        System.out.println("Server started at http://localhost:8080/api/v1/");
+        System.out.println("Press ENTER to stop the server...");
+        System.in.read();
+        server.stop();
     }
 }
 
