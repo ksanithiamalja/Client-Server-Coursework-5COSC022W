@@ -44,21 +44,19 @@ public class WorkspaceResource {
     }
 
     // DELETE /api/v1/workspaces/{id} - delete workspace
-    @DELETE
-    @Path("/{workspaceId}")
-    public Response deleteWorkspace(@PathParam("workspaceId") String workspaceId) {
-        MLWorkspace workspace = DataStore.getWorkspace(workspaceId);
-        if (workspace == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"error\":\"Workspace not found\"}")
-                    .build();
-        }
-        if (!workspace.getModelIds().isEmpty()) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity("{\"error\":\"Cannot delete workspace with models assigned\"}")
-                    .build();
-        }
-        DataStore.deleteWorkspace(workspaceId);
-        return Response.ok("{\"message\":\"Workspace deleted successfully\"}").build();
+@DELETE
+@Path("/{workspaceId}")
+public Response deleteWorkspace(@PathParam("workspaceId") String workspaceId) {
+    MLWorkspace workspace = DataStore.getWorkspace(workspaceId);
+    if (workspace == null) {
+        return Response.status(Response.Status.NOT_FOUND)
+                .entity("{\"error\":\"Workspace not found\"}")
+                .build();
     }
+    if (!workspace.getModelIds().isEmpty()) {
+        throw new WorkspaceNotEmptyException(workspaceId);
+    }
+    DataStore.deleteWorkspace(workspaceId);
+    return Response.ok("{\"message\":\"Workspace deleted successfully\"}").build();
+}  
 }

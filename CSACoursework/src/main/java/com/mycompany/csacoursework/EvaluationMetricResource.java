@@ -33,23 +33,25 @@ public class EvaluationMetricResource {
 
     // POST /api/v1/models/{modelId}/metrics
     // Add a new metric for this model
-    @POST
-    public Response addMetric(EvaluationMetric metric) {
-        MachineLearningModel model = DataStore.getModel(modelId);
-        
-        // Check model exists
-        if (model == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("{\"error\":\"Model not found\"}")
-                    .build();
-        }
-        
-        // Check model is not DEPRECATED
-        if (model.getStatus().equals("DEPRECATED")) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("{\"error\":\"Cannot add metrics to a DEPRECATED model\"}")
-                    .build();
-        }
+@POST
+public Response addMetric(EvaluationMetric metric) {
+    MachineLearningModel model = DataStore.getModel(modelId);
+    if (model == null) {
+        return Response.status(Response.Status.NOT_FOUND)
+                .entity("{\"error\":\"Model not found\"}")
+                .build();
+    }
+    if (model.getStatus().equals("DEPRECATED")) {
+        throw new ModelDeprecatedException(modelId);
+    }
+    metric.setModelId(modelId);
+    metric.setTimestamp(System.currentTimeMillis());
+    DataStore.addMetric(modelId, metric);
+    model.setLatestAccuracy(metric.getAccuracyScore());
+    return Response.status(Response.Status.CREATED)
+            .entity(metric)
+            .build();
+}    
 
         // Set metric details
         metric.setModelId(modelId);

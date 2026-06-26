@@ -36,29 +36,19 @@ public class ModelResource {
     }
 
     // POST /api/v1/models - create new model
-    @POST
-    public Response createModel(MachineLearningModel model) {
-        // Check workspace exists
-        if (!DataStore.workspaceExists(model.getWorkspaceId())) {
-            return Response.status(422)
-                    .entity("{\"error\":\"Workspace not found: " 
-                            + model.getWorkspaceId() + "\"}")
-                    .build();
-        }
-        // Server generates the ID - client cannot set it
-        model.setId("MOD-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase());
-        
-        // Add model to datastore
-        DataStore.addModel(model);
-        
-        // Link model to workspace
-        DataStore.getWorkspace(model.getWorkspaceId())
-                .getModelIds().add(model.getId());
-        
-        return Response.status(Response.Status.CREATED)
-                .entity(model)
-                .build();
+@POST
+public Response createModel(MachineLearningModel model) {
+    if (!DataStore.workspaceExists(model.getWorkspaceId())) {
+        throw new LinkedWorkspaceNotFoundException(model.getWorkspaceId());
     }
+    model.setId("MOD-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase());
+    DataStore.addModel(model);
+    DataStore.getWorkspace(model.getWorkspaceId())
+            .getModelIds().add(model.getId());
+    return Response.status(Response.Status.CREATED)
+            .entity(model)
+            .build();
+}
     // Sub-resource locator
 // GET/POST /api/v1/models/{modelId}/metrics
 @Path("/{modelId}/metrics")
