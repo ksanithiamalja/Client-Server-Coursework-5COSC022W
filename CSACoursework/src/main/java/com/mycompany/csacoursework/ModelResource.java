@@ -59,4 +59,11 @@ public class ModelResource {
                 .entity(model)
                 .build();
     }
+    // Sub-resource locator
+// GET/POST /api/v1/models/{modelId}/metrics
+@Path("/{modelId}/metrics")
+public EvaluationMetricResource getMetricResource(
+        @PathParam("modelId") String modelId) {
+    return new EvaluationMetricResource(modelId);
+}
 }
