@@ -1,24 +1,24 @@
 package com.mycompany.csacoursework;
 
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.UUID;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class EvaluationMetricResource {
 
-    // The model this resource belongs to
     private String modelId;
 
-    // Constructor - receives modelId from ModelResource
     public EvaluationMetricResource(String modelId) {
         this.modelId = modelId;
     }
 
-    // GET /api/v1/models/{modelId}/metrics
-    // Get all metrics for this model
     @GET
     public Response getMetrics() {
         MachineLearningModel model = DataStore.getModel(modelId);
@@ -31,38 +31,22 @@ public class EvaluationMetricResource {
         return Response.ok(metricList).build();
     }
 
-    // POST /api/v1/models/{modelId}/metrics
-    // Add a new metric for this model
-@POST
-public Response addMetric(EvaluationMetric metric) {
-    MachineLearningModel model = DataStore.getModel(modelId);
-    if (model == null) {
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity("{\"error\":\"Model not found\"}")
-                .build();
-    }
-    if (model.getStatus().equals("DEPRECATED")) {
-        throw new ModelDeprecatedException(modelId);
-    }
-    metric.setModelId(modelId);
-    metric.setTimestamp(System.currentTimeMillis());
-    DataStore.addMetric(modelId, metric);
-    model.setLatestAccuracy(metric.getAccuracyScore());
-    return Response.status(Response.Status.CREATED)
-            .entity(metric)
-            .build();
-}    
-
-        // Set metric details
+    @POST
+    public Response addMetric(EvaluationMetric metric) {
+        MachineLearningModel model = DataStore.getModel(modelId);
+        if (model == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"error\":\"Model not found\"}")
+                    .build();
+        }
+        if (model.getStatus().equals("DEPRECATED")) {
+            throw new ModelDeprecatedException(modelId);
+        }
+        metric.setId(UUID.randomUUID().toString());
         metric.setModelId(modelId);
         metric.setTimestamp(System.currentTimeMillis());
-
-        // Save metric
         DataStore.addMetric(modelId, metric);
-
-        // Update model's latestAccuracy with this new score
         model.setLatestAccuracy(metric.getAccuracyScore());
-
         return Response.status(Response.Status.CREATED)
                 .entity(metric)
                 .build();
