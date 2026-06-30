@@ -1,8 +1,19 @@
 # MLOps Pipeline Management API
 
-A RESTful API built with **JAX-RS (Jersey)** and **Grizzly HTTP Server** for managing Machine Learning Workspaces, Models, and Evaluation Metrics.
+- **Student Name:** Sanithi Amalja
+- **IIT ID:** 20231765
+- **UOW ID:** W2153569
+- **Module:** 5COSC022W - Client-Server Architectures
+- **Coursework:** MLOps Pipeline Management API (Reassessment)
+
+
+
+## Video Demonstration
+https://drive.google.com/file/d/1p9xLIgcYZTlvN5vUw4xV0zTvl_vJ7idY/view?usp=sharing
 
 ---
+
+A RESTful API built with **JAX-RS (Jersey)** and **Grizzly HTTP Server** for managing Machine Learning Workspaces, Models, and Evaluation Metrics.
 
 ## Technology Stack
 
